@@ -3,9 +3,9 @@ const path = require('path')
 const util = require('util')
 const fs = require('fs')
 
-const readSync = fs.readFileSync
-const readExperimental = fs.promises.readFile
-const readPromisified = util.promisify(fs.readFile)
+for (const [key, value] of Object.entries(fs))
+  if (!key.endsWith('Sync') && typeof value === 'function')
+    fs[key + 'Promise'] = util.promisify(value)
 
 const bench = async (name, fn) => {
   try {
@@ -27,29 +27,29 @@ const main = async () => {
   await bench('sync (for-loop)', () => {
     const arr = []
     for (let i = 0; i < paths.length; i++)
-      arr.push(readSync(paths[i]))
+      arr.push(fs.readFileSync(paths[i]))
     return arr
   })
 
   await bench('sync (map)', () => {
-    return paths.map(path => readSync(path))
+    return paths.map(path => fs.readFileSync(path))
   })
 
   await bench('Promise.all (experimental)', async () => {
-    return Promise.all(paths.map(path => readExperimental(path)))
+    return Promise.all(paths.map(path => fs.promises.readFile(path)))
   })
 
   await bench('Promise.all', async () => {
-    return Promise.all(paths.map(path => readPromisified(path)))
+    return Promise.all(paths.map(path => fs.readFilePromise(path)))
   })
 
   await bench('Bluebird.map', async () => {
-    return Bluebird.map(paths, path => readPromisified(path))
+    return Bluebird.map(paths, path => fs.readFilePromise(path))
   })
 
-  for (const concurrency of [100, 500, 1000, 2000, 4000, 8000])
+  for (const concurrency of [2, 3, 5, 10, 50, 100, 500, 1000])
     await bench(`Bluebird.map (concurrency: ${concurrency})`, async () => {
-      return Bluebird.map(paths, path => readPromisified(path), { concurrency })
+      return Bluebird.map(paths, path => fs.readFilePromise(path), { concurrency })
     })
 }
 
