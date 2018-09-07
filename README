@@ -1,0 +1,4 @@
+git clone https://github.com/thepheer/small-files-benchmark.git && cd small-files-benchmark
+npm install
+npm run setup
+npm run bench
