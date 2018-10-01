@@ -1,1 +1,2 @@
-git clone https://github.com/thepheer/small-files-benchmark.git && cd small-files-benchmark && make bench
+git clone https://github.com/thepheer/small-files-benchmark.git && cd small-files-benchmark 
+&& make bench FILES=20000

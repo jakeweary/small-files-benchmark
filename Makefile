@@ -1,13 +1,16 @@
-bench: node_modules small-files
+FILES?=20000
+
+bench: setup
 	node bench
+
+setup: node_modules
+	rm -rf small-files
+	mkdir small-files
+	for i in $$(seq 1 $(FILES)); do \
+		echo This is file $$i > small-files/$$i.txt; \
+	done
 
 node_modules:
 	npm install bluebird
 
-small-files:
-	mkdir -p small-files
-	for i in $$(seq 1 20000); do \
-		echo This is file $$i > small-files/$$i.txt; \
-	done
-
-.PHONY: bench
+.PHONY: bench setup
