@@ -1,5 +1,3 @@
-FILES?=20000
-
 bench: setup
 	node bench
 
